@@ -18,7 +18,7 @@ const HINT = {
   bis: 'Wskaż trzy punkty: ramię, wierzchołek, ramię.', int: 'Wskaż dwa obiekty (proste, odcinki, okręgi).', ang: 'Wskaż trzy punkty: ramię, wierzchołek, ramię.', refl: 'Wskaż punkt i oś symetrii.', del: 'Kliknij obiekt, aby go usunąć (razem z zależnymi).'
 };
 const LINE_T = new Set(['seg', 'line', 'ray', 'perp', 'par', 'bis']), PT_T = new Set(['P', 'mid', 'int', 'on', 'refl']), CI_T = new Set(['circ', 'circ3']);
-const COL = { pt: '#14A3A8', line: '#E0457B', circ: '#7048E8', poly: '#0A6A6E', ang: '#0C8599', sel: '#F08C00' };
+const COL = { pt: '#14A3A8', line: '#2D6CDF', circ: '#7048E8', poly: '#0A6A6E', ang: '#0C8599', sel: '#F08C00' };
 let tool = 'move', pend = [], W = 800, H = 600, dirty = false, drag = null, hist = [], fut = [], R = new Map(), selId = null, moved = 0, hoverP = null;
 const ptrs = new Map();
 let pinch = null;

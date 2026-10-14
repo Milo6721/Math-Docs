@@ -22,7 +22,7 @@ header.top{height:60px;flex:none;display:flex;align-items:center;gap:6px;padding
 .logo img{position:absolute;width:122%;height:122%;left:-11%;top:-11%;max-width:none}
 .word{font:600 22px/1 Fraunces,Georgia,serif;letter-spacing:-.01em;white-space:nowrap}
 .word{color:#0E8388}
-.word b{color:#E0457B;font-weight:600}
+.word b{color:#2D6CDF;font-weight:600}
 .tag{font-size:12px;color:var(--muted);padding:3px 9px;border:1px solid var(--line);border-radius:99px;background:var(--surface);white-space:nowrap}
 .tabs{display:flex;gap:4px;margin-left:6px}
 .tabs button{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 13px;border:1px solid transparent;background:none;border-radius:11px;font-weight:500;color:#2F5251}

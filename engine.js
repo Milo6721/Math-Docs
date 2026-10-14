@@ -406,7 +406,7 @@ Object.assign(MD, {
   clamp, r1, esc, measure, FONTS,
   parseRow, makeCtx, evalAst, comp, tokenize, parseTokens, uses, freeVars, fmtNum, findRoots, findExtrema,
   isBuiltin: nm => !!(FN1[nm] || FNN[nm] || CONSTS[nm]),
-  texSVG(tex, size, color) { const e = { x: 0, y: 0, tex, size: size || 24, stroke: color || '#2E1A24' }; const g = mathInner(e, true); return { svg: g, w: e.w, h: e.h }; },
+  texSVG(tex, size, color) { const e = { x: 0, y: 0, tex, size: size || 24, stroke: color || '#10282A' }; const g = mathInner(e, true); return { svg: g, w: e.w, h: e.h }; },
   texHTML(tex, size, color) { const t = MD.texSVG(tex, size, color); return `<svg class="tex" viewBox="0 0 ${t.w} ${t.h}" width="${Math.round(t.w)}" height="${Math.round(t.h)}">${t.svg}</svg>`; }
 });
 })();

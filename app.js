@@ -134,7 +134,7 @@ MD.onLang = [];
 /* ---------- pomoce wspólne ---------- */
 MD.download = (name, blob) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
 MD.canvasPNG = (cv, name) => cv.toBlob(b => b && MD.download(name, b), 'image/png');
-MD.COLORS = ['#E0457B', '#E8590C', '#7048E8', '#F08C00', '#C92A2A', '#0C8599', '#B8860B', '#D6336C'];
+MD.COLORS = ['#14A3A8', '#E0457B', '#7048E8', '#F08C00', '#C92A2A', '#0C8599', '#B8860B', '#D6336C'];
 MD.nice = v => { // ładny krok siatki
   const e = Math.floor(Math.log10(v)), f = v / Math.pow(10, e);
   return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * Math.pow(10, e);

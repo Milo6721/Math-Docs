@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Math Docs — pracownia matematyczna</title>
+<meta name="description" content="Math Docs: kalkulator graficzny, geometria dynamiczna i rozwiązywanie zadań krok po kroku z AI.">
+<meta name="theme-color" content="#F0F6FD">
+<link rel="icon" href="logo.webp" type="image/webp">
+<link rel="apple-touch-icon" href="logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Math Docs">
+    <span class="logo"><img src="logo.webp" alt=""></span>
+    <span class="word">Math <b>Docs</b></span>
+    <span class="tag">pracownia matematyczna</span>
+  </a>
+  <nav class="tabs" id="mainTabs" aria-label="Sekcje">
+    <button data-tab="graph" class="on"><i data-i="graph"></i><span>Wykresy</span></button>
+    <button data-tab="geo"><i data-i="geo"></i><span>Geometria</span></button>
+    <button data-tab="solve"><i data-i="solve"></i><span>Rozwiązywanie</span></button>
+    <button data-tab="formulas"><i data-i="formulas"></i><span>Wzory</span></button>
+  </nav>
+  <div class="grow"></div>
+  <div class="menu" id="mFile">
+    <button class="btn" data-menu><i data-i="dl"></i><span class="lbl">Plik</span><i data-i="chev"></i></button>
+    <div class="drop">
+      <button data-act="png"><b>Zapisz widok jako PNG</b><small>Bieżący wykres lub konstrukcję</small></button>
+      <button data-act="json"><b>Zapisz projekt (JSON)</b><small>Kopia zapasowa wszystkich zakładek</small></button>
+      <button data-act="import"><b>Wczytaj projekt (JSON)</b></button>
+      <hr>
+      <button data-act="clear" class="danger"><b>Wyczyść bieżącą zakładkę</b></button>
+    </div>
+  </div>
+  <button class="btn lang" id="langBtn" title="Język / Language" data-notr><span class="lg on" data-l="pl">PL</span><span class="lg" data-l="en">EN</span></button>
+  <button class="btn ico" id="helpBtn" title="Pomoc i skróty"><i data-i="help"></i></button>
+</header>
+
+<main id="stage">
+
+  <!-- ============ WYKRESY ============ -->
+  <section class="view on" id="v-graph">
+    <aside class="side" id="gSide">
+      <div class="sidehead">
+        <b>Wyrażenia</b>
+        <span class="grow"></span>
+        <button class="chip" id="gAngle" title="Jednostka kąta w funkcjach trygonometrycznych">RAD</button>
+        <button class="btn ico sm" id="gAdd" title="Dodaj wyrażenie"><i data-i="plus"></i></button><button class="btn ico sm mob" data-close title="Zwiń panel"><i data-i="chev"></i></button>
+      </div>
+      <div class="rows" id="gRows"></div>
+      <div class="examples">
+        <small class="muted">Przykłady</small>
+        <div class="chips" id="gExamples"></div>
+      </div>
+      <p class="hint">Wpisz np. <code>y=x^2-2x-3</code>, <code>x^2+y^2=25</code>, <code>(2,3)</code> albo <code>a=1</code> (suwak). Zdefiniuj <code>f(x)=x^3</code> i wpisz <code>f'(x)</code>, żeby zobaczyć pochodną.</p>
+    </aside>
+    <div class="cv" id="gWrap">
+      <canvas id="gCanvas"></canvas>
+      <div class="cvtools">
+        <button class="btn ico" id="gZoomIn" title="Powiększ"><i data-i="plus"></i></button>
+        <button class="btn ico" id="gZoomOut" title="Pomniejsz"><i data-i="minus"></i></button>
+        <button class="btn ico" id="gHome" title="Widok początkowy"><i data-i="fit"></i></button>
+        <button class="btn ico on" id="gGrid" title="Siatka"><i data-i="grid"></i></button>
+      </div>
+      <div class="coord" id="gCoord"></div>
+      <button class="fab" id="gSideBtn"><i data-i="list"></i><span>Wyrażenia</span></button>
+    </div>
+  </section>
+
+  <!-- ============ GEOMETRIA ============ -->
+  <section class="view" id="v-geo">
+    <aside class="side" id="geoSide">
+      <div class="sidehead"><b>Narzędzia</b><span class="grow"></span>
+        <button class="btn ico sm" id="geoUndo" title="Cofnij (Ctrl+Z)"><i data-i="undo"></i></button>
+        <button class="btn ico sm" id="geoRedo" title="Ponów (Ctrl+Y)"><i data-i="redo"></i></button><button class="btn ico sm mob" data-close title="Zwiń panel"><i data-i="chev"></i></button>
+      </div>
+      <div class="toolgrid" id="geoTools"></div>
+      <div class="sidehead"><b>Obiekty i miary</b><span class="grow"></span>
+        <button class="chip on" id="geoSnap" title="Przyciągaj punkty do siatki">Przyciąganie</button>
+        <button class="chip on" id="geoMeasure" title="Pokaż miary na rysunku">Miary</button>
+      </div>
+      <div class="rows" id="geoList"></div>
+      <p class="hint" id="geoHint"></p>
+    </aside>
+    <div class="cv" id="geoWrap">
+      <canvas id="geoCanvas"></canvas>
+      <div class="cvtools">
+        <button class="btn ico" id="geoZoomIn" title="Powiększ"><i data-i="plus"></i></button>
+        <button class="btn ico" id="geoZoomOut" title="Pomniejsz"><i data-i="minus"></i></button>
+        <button class="btn ico" id="geoHome" title="Widok początkowy"><i data-i="fit"></i></button>
+      </div>
+      <div class="geobar" id="geoBar"></div>
+      <button class="fab" id="geoSideBtn"><i data-i="list"></i><span>Narzędzia</span></button>
+    </div>
+  </section>
+
+  <!-- ============ ROZWIĄZYWANIE ============ -->
+  <section class="view" id="v-solve">
+    <div class="solvewrap">
+      <div class="solvein">
+        <h2>Rozwiąż zadanie <em>krok po kroku</em></h2>
+        <p class="muted">Wpisz równanie, nierówność, układ równań, wyrażenie albo opisz zadanie słowami. Proste równania liczę od razu na urządzeniu, resztę rozwiązuje AI.</p>
+        <textarea id="sIn" rows="3" spellcheck="false" placeholder="np.  x^2 - 5x + 6 = 0   albo   pochodna x^3·sin(x)"></textarea>
+        <div class="srow">
+          <button class="btn primary" id="sGo"><i data-i="spark"></i><span>Rozwiąż</span></button>
+          <button class="btn" id="sAi" title="Zawsze poproś AI o wyjaśnienie"><i data-i="spark"></i><span>Wyjaśnij z AI</span></button>
+          <button class="btn" id="sImg" title="Dodaj zdjęcie zadania"><i data-i="image"></i><span>Zdjęcie</span></button>
+          <input type="file" id="sFile" accept="image/*" hidden>
+          <span class="grow"></span>
+          <button class="btn ico" id="sClear" title="Wyczyść"><i data-i="trash"></i></button>
+        </div>
+        <div class="imgprev" id="sPrev" hidden><img alt=""><button class="aix" id="sPrevX" title="Usuń zdjęcie">×</button></div>
+        <div class="chips" id="sExamples"></div>
+      </div>
+      <div class="solveout" id="sOut"></div>
+      <div class="solvehist" id="sHist"></div>
+    </div>
+  </section>
+
+  <!-- ============ WZORY ============ -->
+  <section class="view" id="v-formulas">
+    <div class="fwrap">
+      <div class="fhead">
+        <h2>Ściąga <em>z wzorami</em></h2>
+        <input id="fSearch" type="text" placeholder="Szukaj wzoru…" autocomplete="off">
+      </div>
+      <div class="fcats" id="fCats"></div>
+      <div class="fgrid" id="fGrid"></div>
+    </div>
+  </section>
+
+  <div id="toast"></div>
+</main>
+
+<footer><span>© <b>MGS Corporation</b> 2026</span><span class="dot"></span><span>Math Docs</span></footer>
+
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+
+<dialog id="helpDlg">
+  <h3>Pomoc i skróty</h3>
+  <table>
+    <tr><td>Wykresy: przesuwanie / zoom</td><td>przeciągnij / kółko myszy lub szczypanie</td></tr>
+    <tr><td>Wykresy: nowy wiersz</td><td><kbd class="k">Enter</kbd> w polu wyrażenia</td></tr>
+    <tr><td>Wykresy: punkty szczególne</td><td>przycisk ⌖ przy funkcji (miejsca zerowe, ekstrema, przecięcia)</td></tr>
+    <tr><td>Wykresy: dokładny punkt</td><td>kliknij krzywą, aby przypiąć współrzędne</td></tr>
+    <tr><td>Geometria: przeciąganie</td><td>narzędzie „Przesuń”, chwyć punkt — wszystko się przelicza</td></tr>
+    <tr><td>Geometria: cofnij / ponów</td><td><kbd class="k">Ctrl</kbd>+<kbd class="k">Z</kbd> / <kbd class="k">Ctrl</kbd>+<kbd class="k">Y</kbd></td></tr>
+    <tr><td>Geometria: usuń zaznaczony obiekt</td><td><kbd class="k">Del</kbd></td></tr>
+    <tr><td>Rozwiązywanie: wyślij</td><td><kbd class="k">Ctrl</kbd>+<kbd class="k">Enter</kbd></td></tr>
+    <tr><td>Funkcje</td><td>sin cos tan asin acos atan sqrt abs ln log exp min max mod</td></tr>
+    <tr><td>Stałe</td><td>pi, e (mnożenie można pominąć: 2x, 3(x+1))</td></tr>
+  </table>
+  <div class="row"><button class="btn primary" id="helpClose">Zamknij</button></div>
+</dialog>
+
+<script src="i18n.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+<script src="graph.js"></script>
+<script src="geometry.js"></script>
+<script src="formulas_data.js"></script>
+<script src="solver.js"></script>
+<script src="boot.js"></script>
+</body>
+</html>

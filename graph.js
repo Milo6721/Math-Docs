@@ -83,16 +83,16 @@ function draw() {
   const major = MD.nice(80 / sc), minor = major / 5;
   g.lineWidth = 1;
   if (G().grid) {
-    if (minor * sc >= 11) { g.strokeStyle = '#EAF1FA'; g.beginPath(); for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) { const px = Math.round(X(v)) + .5; g.moveTo(px, 0); g.lineTo(px, H); } for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) { const py = Math.round(Y(v)) + .5; g.moveTo(0, py); g.lineTo(W, py); } g.stroke(); }
-    g.strokeStyle = '#D0DDEC'; g.beginPath();
+    if (minor * sc >= 11) { g.strokeStyle = '#F8E8EF'; g.beginPath(); for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) { const px = Math.round(X(v)) + .5; g.moveTo(px, 0); g.lineTo(px, H); } for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) { const py = Math.round(Y(v)) + .5; g.moveTo(0, py); g.lineTo(W, py); } g.stroke(); }
+    g.strokeStyle = '#EBCDDB'; g.beginPath();
     for (let v = Math.ceil(x0 / major) * major; v <= x1; v += major) { const px = Math.round(X(v)) + .5; g.moveTo(px, 0); g.lineTo(px, H); }
     for (let v = Math.ceil(y0 / major) * major; v <= y1; v += major) { const py = Math.round(Y(v)) + .5; g.moveTo(0, py); g.lineTo(W, py); }
     g.stroke();
   }
   /* osie */
   const ax = MD.clamp(Math.round(X(0)) + .5, 0.5, W - .5), ay = MD.clamp(Math.round(Y(0)) + .5, 0.5, H - .5);
-  g.strokeStyle = '#40566F'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(0, ay); g.lineTo(W, ay); g.moveTo(ax, 0); g.lineTo(ax, H); g.stroke();
-  g.fillStyle = '#6B7F95'; g.font = '11.5px Inter,sans-serif'; g.textBaseline = 'top'; g.textAlign = 'center';
+  g.strokeStyle = '#5A3A4A'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(0, ay); g.lineTo(W, ay); g.moveTo(ax, 0); g.lineTo(ax, H); g.stroke();
+  g.fillStyle = '#9A7487'; g.font = '11.5px Inter,sans-serif'; g.textBaseline = 'top'; g.textAlign = 'center';
   const lblY = MD.clamp(ay + 4, 2, H - 16);
   for (let v = Math.ceil(x0 / major) * major; v <= x1; v += major) { if (Math.abs(v) < major / 1e3) continue; g.fillText(fmt(v), X(v), lblY); }
   g.textAlign = 'right'; g.textBaseline = 'middle';
@@ -112,9 +112,9 @@ function draw() {
 function label(g, t, px, py, col) {
   g.font = '600 12px Inter,sans-serif'; g.textAlign = 'left'; g.textBaseline = 'middle';
   const w = g.measureText(t).width + 12; let lx = px + 10, ly = py - 14; if (lx + w > W - 4) lx = px - w - 10; if (ly < 12) ly = py + 16;
-  g.fillStyle = 'rgba(253,254,255,.94)'; g.strokeStyle = col || '#D9E4F0'; g.lineWidth = 1;
+  g.fillStyle = 'rgba(255,252,253,.94)'; g.strokeStyle = col || '#F3D9E4'; g.lineWidth = 1;
   g.beginPath(); g.roundRect ? g.roundRect(lx, ly - 11, w, 22, 8) : g.rect(lx, ly - 11, w, 22); g.fill(); g.stroke();
-  g.fillStyle = '#14202E'; g.fillText(t, lx + 6, ly + .5);
+  g.fillStyle = '#2E1A24'; g.fillText(t, lx + 6, ly + .5);
 }
 function drawRow(g, r, x0, x1, y0, y1) {
   const p = r._p, col = r.color;

@@ -18,7 +18,7 @@ const HINT = {
   bis: 'Wskaż trzy punkty: ramię, wierzchołek, ramię.', int: 'Wskaż dwa obiekty (proste, odcinki, okręgi).', ang: 'Wskaż trzy punkty: ramię, wierzchołek, ramię.', refl: 'Wskaż punkt i oś symetrii.', del: 'Kliknij obiekt, aby go usunąć (razem z zależnymi).'
 };
 const LINE_T = new Set(['seg', 'line', 'ray', 'perp', 'par', 'bis']), PT_T = new Set(['P', 'mid', 'int', 'on', 'refl']), CI_T = new Set(['circ', 'circ3']);
-const COL = { pt: '#2D6CDF', line: '#0C8599', circ: '#2F9E44', poly: '#1B4FBF', ang: '#7048E8', sel: '#E8590C' };
+const COL = { pt: '#E0457B', line: '#E8590C', circ: '#7048E8', poly: '#A61F52', ang: '#0C8599', sel: '#F08C00' };
 let tool = 'move', pend = [], W = 800, H = 600, dirty = false, drag = null, hist = [], fut = [], R = new Map(), selId = null, moved = 0, hoverP = null;
 const ptrs = new Map();
 let pinch = null;
@@ -149,8 +149,8 @@ function draw() {
   g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, H);
   const sc = V().sc, x0 = wx(0), x1 = wx(W), y1 = wy(0), y0 = wy(H), major = MD.nice(80 / sc), minor = major / 5;
   g.lineWidth = 1;
-  if (minor * sc >= 11) { g.strokeStyle = '#EAF1FA'; g.beginPath(); for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) { const px = Math.round(X(v)) + .5; g.moveTo(px, 0); g.lineTo(px, H); } for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) { const py = Math.round(Y(v)) + .5; g.moveTo(0, py); g.lineTo(W, py); } g.stroke(); }
-  g.strokeStyle = '#D9E4F0'; g.beginPath();
+  if (minor * sc >= 11) { g.strokeStyle = '#F8E8EF'; g.beginPath(); for (let v = Math.ceil(x0 / minor) * minor; v <= x1; v += minor) { const px = Math.round(X(v)) + .5; g.moveTo(px, 0); g.lineTo(px, H); } for (let v = Math.ceil(y0 / minor) * minor; v <= y1; v += minor) { const py = Math.round(Y(v)) + .5; g.moveTo(0, py); g.lineTo(W, py); } g.stroke(); }
+  g.strokeStyle = '#F3D9E4'; g.beginPath();
   for (let v = Math.ceil(x0 / major) * major; v <= x1; v += major) { const px = Math.round(X(v)) + .5; g.moveTo(px, 0); g.lineTo(px, H); }
   for (let v = Math.ceil(y0 / major) * major; v <= y1; v += major) { const py = Math.round(Y(v)) + .5; g.moveTo(0, py); g.lineTo(W, py); }
   g.stroke();
@@ -162,20 +162,20 @@ function draw() {
   if (pend.length && hoverP) {
     const last = res(pend[pend.length - 1].id);
     if (last && okp(last) && (tool === 'seg' || tool === 'line' || tool === 'ray' || tool === 'circ' || tool === 'poly' || tool === 'mid')) {
-      g.setLineDash([6, 5]); g.strokeStyle = '#6B7F95'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(X(last.x), Y(last.y)); g.lineTo(hoverP[0], hoverP[1]); g.stroke(); g.setLineDash([]);
+      g.setLineDash([6, 5]); g.strokeStyle = '#9A7487'; g.lineWidth = 1.6; g.beginPath(); g.moveTo(X(last.x), Y(last.y)); g.lineTo(hoverP[0], hoverP[1]); g.stroke(); g.setLineDash([]);
     }
   }
 }
 function lbl(g, t, px, py, col, off = 12) {
   g.font = '600 12.5px Inter,sans-serif'; g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-  g.lineWidth = 3.5; g.strokeStyle = 'rgba(255,255,255,.92)'; g.strokeText(t, px + off, py - off * .6); g.fillStyle = col || '#14202E'; g.fillText(t, px + off, py - off * .6);
+  g.lineWidth = 3.5; g.strokeStyle = 'rgba(255,255,255,.92)'; g.strokeText(t, px + off, py - off * .6); g.fillStyle = col || '#2E1A24'; g.fillText(t, px + off, py - off * .6);
 }
 function drawObj(g, o, r) {
   const sel = o.id === selId, meas = GS().measure;
   g.lineJoin = 'round'; g.lineCap = 'round';
   if (r.k === 'poly') {
     g.beginPath(); r.pts.forEach(([x, y], i) => i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y))); g.closePath();
-    g.fillStyle = sel ? 'rgba(45,108,223,.22)' : 'rgba(45,108,223,.12)'; g.fill(); g.strokeStyle = sel ? COL.sel : COL.poly; g.lineWidth = sel ? 3 : 2.2; g.stroke();
+    g.fillStyle = sel ? 'rgba(224,69,123,.22)' : 'rgba(224,69,123,.12)'; g.fill(); g.strokeStyle = sel ? COL.sel : COL.poly; g.lineWidth = sel ? 3 : 2.2; g.stroke();
     if (meas) { const c = centroid(r.pts); lbl(g, `${MD.tr('P')} = ${num(polyArea(r.pts))}`, X(c[0]) - 24, Y(c[1]), COL.poly, 0); }
     return;
   }
@@ -195,14 +195,14 @@ function drawObj(g, o, r) {
   const dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, ext = (W + H) * 3;
   if (r.k === 'line') { a = [p[0] - dx / L * ext, p[1] - dy / L * ext]; b = [p[0] + dx / L * ext, p[1] + dy / L * ext]; }
   else if (r.k === 'ray') b = [p[0] + dx / L * ext, p[1] + dy / L * ext];
-  g.strokeStyle = sel ? COL.sel : (r.k === 'seg' ? '#14202E' : COL.line); g.lineWidth = sel ? 3.2 : (r.k === 'seg' ? 2.4 : 2); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
-  if (r.k === 'seg' && meas) { const len = Math.hypot(r.q[0] - r.p[0], r.q[1] - r.p[1]); lbl(g, num(len), (p[0] + q[0]) / 2, (p[1] + q[1]) / 2, '#40566F', 6); }
+  g.strokeStyle = sel ? COL.sel : (r.k === 'seg' ? '#2E1A24' : COL.line); g.lineWidth = sel ? 3.2 : (r.k === 'seg' ? 2.4 : 2); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
+  if (r.k === 'seg' && meas) { const len = Math.hypot(r.q[0] - r.p[0], r.q[1] - r.p[1]); lbl(g, num(len), (p[0] + q[0]) / 2, (p[1] + q[1]) / 2, '#5A3A4A', 6); }
 }
 function drawPt(g, o, r) {
   const px = X(r.x), py = Y(r.y), free = o.t === 'P' || o.t === 'on', sel = o.id === selId, inP = pend.some(q => q.id === o.id);
   g.beginPath(); g.arc(px, py, sel || inP ? 7.5 : 6, 0, 6.2832);
-  g.fillStyle = free ? COL.pt : '#6B7F95'; g.fill(); g.lineWidth = 2; g.strokeStyle = sel || inP ? COL.sel : '#fff'; g.stroke();
-  lbl(g, o.name, px, py, '#14202E', 9);
+  g.fillStyle = free ? COL.pt : '#9A7487'; g.fill(); g.lineWidth = 2; g.strokeStyle = sel || inP ? COL.sel : '#fff'; g.stroke();
+  lbl(g, o.name, px, py, '#2E1A24', 9);
 }
 const polyArea = pts => { let s = 0; for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; };
 const polyPer = pts => pts.reduce((s, a, i) => s + Math.hypot(a[0] - pts[(i + 1) % pts.length][0], a[1] - pts[(i + 1) % pts.length][1]), 0);

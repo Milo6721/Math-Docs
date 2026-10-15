@@ -25,6 +25,7 @@
     <button data-tab="graph" class="on"><i data-i="graph"></i><span>Wykresy</span></button>
     <button data-tab="geo"><i data-i="geo"></i><span>Geometria</span></button>
     <button data-tab="solve"><i data-i="solve"></i><span>Rozwiązywanie</span></button>
+    <button data-tab="calc"><i data-i="calc"></i><span>Kalkulator</span></button>
     <button data-tab="formulas"><i data-i="formulas"></i><span>Wzory</span></button>
   </nav>
   <div class="grow"></div>
@@ -123,6 +124,21 @@
     </div>
   </section>
 
+  <!-- ============ KALKULATOR ============ -->
+  <section class="view" id="v-calc">
+    <div class="calcwrap">
+      <div class="calcbox">
+        <div class="cdisp">
+          <input id="cIn" type="text" inputmode="none" spellcheck="false" autocomplete="off" autocapitalize="off" placeholder="Wpisz działanie…" data-notr>
+          <div id="cOut"></div>
+        </div>
+        <div class="cbar"><button class="chip" id="cDeg" title="Jednostka kąta w funkcjach trygonometrycznych">RAD</button><span class="grow"></span><button class="chip" id="cClearHist">Wyczyść historię</button></div>
+        <div class="ckeys" id="cKeys"></div>
+      </div>
+      <div class="chist" id="cHist"></div>
+    </div>
+  </section>
+
   <!-- ============ WZORY ============ -->
   <section class="view" id="v-formulas">
     <div class="fwrap">
@@ -166,6 +182,7 @@
 <script src="geometry.js"></script>
 <script src="formulas_data.js"></script>
 <script src="solver.js"></script>
+<script src="calc.js"></script>
 <script src="boot.js"></script>
 </body>
 </html>

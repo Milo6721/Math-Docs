@@ -67,7 +67,68 @@ function polyFromExpr(expr, v) {
   const z = k => Math.abs(k) < 1e-10 ? 0 : k;
   return { a: z(a), b: z(b), c: z(c) };
 }
+/* układ dwóch równań liniowych z x i y (wzory Cramera) */
+function linXY(side) {
+  const row = MD.parseRow(side, {}); if (!row.ast) return null;
+  const ctx = MD.makeCtx({}, {}, false), f = (x, y) => { ctx.x = x; ctx.y = y; return MD.evalAst(row.ast, ctx); };
+  const c = f(0, 0), a = f(1, 0) - c, b = f(0, 1) - c;
+  if (![a, b, c].every(Number.isFinite)) return null;
+  for (const [x, y] of [[2, 3], [-1.5, 4], [5, -2.5]]) { const v = f(x, y); if (!Number.isFinite(v) || Math.abs(v - (a * x + b * y + c)) > 1e-7 * Math.max(1, Math.abs(v))) return null; }
+  const z = k => Math.abs(k) < 1e-10 ? 0 : k;
+  return [z(a), z(b), z(c)];
+}
+function localSystem(src) {
+  let s = src.replace(/^\s*(układ|uklad|system)\s*(równań|rownan|of equations)?\s*:?/i, '').replace(/[{}]/g, '').replace(/²/g, '^2');
+  const parts = s.split(/[;\n]|,(?![^(]*\))/).map(p => p.trim()).filter(Boolean);
+  if (parts.length !== 2 || !parts.every(p => (p.match(/=/g) || []).length === 1 && !/[<>]/.test(p))) return null;
+  const co = parts.map(p => { const [L, R] = p.split('='); return linXY(`(${L})-(${R})`); });
+  if (co.some(c => !c)) return null;
+  // a x + b y + c = 0  ->  a x + b y = -c
+  const [a1, b1, c1] = co[0], [a2, b2, c2] = co[1], d1 = -c1, d2 = -c2;
+  const W = a1 * b2 - a2 * b1, Wx = d1 * b2 - d2 * b1, Wy = a1 * d2 - a2 * d1;
+  const eqTex = (a, b, d) => `${[a ? `${a === 1 ? '' : a === -1 ? '-' : tx(a)}x` : '', b ? `${b < 0 ? '-' : (a ? '+' : '')}${Math.abs(b) === 1 ? '' : tx(Math.abs(b))}y` : ''].join('') || '0'} = ${tx(d)}`;
+  const steps = [{ title: MD.tr('Zapisuję układ'), explain: MD.tr('Każde równanie zapisuję w postaci ax + by = c.'), tex: `${eqTex(a1, b1, d1)}\\quad\\text{;}\\quad ${eqTex(a2, b2, d2)}` }];
+  steps.push({ title: MD.tr('Obliczam wyznaczniki (wzory Cramera)'), explain: MD.tr('W to wyznacznik główny, Wx i Wy powstają przez podmianę kolumny.'), tex: `W = ${txp(a1)}\\cdot${txp(b2)} - ${txp(a2)}\\cdot${txp(b1)} = ${tx(W)},\\quad W_x = ${tx(Wx)},\\quad W_y = ${tx(Wy)}` });
+  let answer, graph = [];
+  const gl = (a, b, d) => b ? `y=(${d}-(${a})x)/(${b})` : `x=${d / a}`;
+  graph = [gl(a1, b1, d1), gl(a2, b2, d2)];
+  if (Math.abs(W) > 1e-12) {
+    const x = Wx / W, y = Wy / W;
+    steps.push({ title: MD.tr('Jedno rozwiązanie'), explain: MD.tr('Gdy W ≠ 0, układ ma dokładnie jedno rozwiązanie: x = Wx / W, y = Wy / W.'), tex: `x = \\frac{W_x}{W} = ${tx(x)},\\quad y = \\frac{W_y}{W} = ${tx(y)}` });
+    answer = `x = ${tx(x)},\\quad y = ${tx(y)}`; graph.push(`(${x},${y})`);
+  } else if (Math.abs(Wx) < 1e-12 && Math.abs(Wy) < 1e-12) {
+    steps.push({ title: MD.tr('W = 0 i Wx = Wy = 0'), explain: MD.tr('Układ jest nieoznaczony — proste się pokrywają.'), tex: '' });
+    answer = `\\text{${MD.tr('nieskończenie wiele rozwiązań')}}`;
+  } else {
+    steps.push({ title: MD.tr('W = 0, ale Wx lub Wy ≠ 0'), explain: MD.tr('Układ jest sprzeczny — proste są równoległe.'), tex: '' });
+    answer = `\\text{${MD.tr('brak rozwiązań')}}`;
+  }
+  return { title: MD.tr('Układ dwóch równań liniowych'), answer, steps: steps.map(s => (s.tex ? s : { ...s, tex: '' })), graph, local: true };
+}
+/* równanie z jedną niewiadomą x (nie wielomian): miejsca zerowe numerycznie */
+function localNumeric(rel) {
+  if (rel.op !== '=') return null;
+  const f = MD.parseRow(`(${rel.L})-(${rel.R})`, {}); if (!f.ast) return null;
+  const ctx = MD.makeCtx({}, {}, false), g = x => { ctx.x = x; return MD.evalAst(f.ast, ctx); };
+  let roots = MD.findRoots(g, -50, 50, 8000).filter(r => Math.abs(g(r)) < 1e-4);
+  if (!roots.length) return null;
+  const many = roots.length > 8;
+  if (many) roots = roots.sort((p, q) => Math.abs(p) - Math.abs(q)).slice(0, 8).sort((p, q) => p - q);
+  const shown = roots.map(r => MD.fmtNum(r, 6));
+  return {
+    title: MD.tr('Równanie — rozwiązanie przybliżone'),
+    answer: `x \\approx ${shown.join(';\\ ')}`,
+    steps: [
+      { title: MD.tr('Przekształcam do postaci f(x) = 0'), explain: MD.tr('Przenoszę wszystko na lewą stronę.'), tex: `${toTex(rel.L)} - (${toTex(rel.R)}) = 0` },
+      { title: MD.tr('Szukam miejsc zerowych numerycznie'), explain: MD.tr('Skanuję przedział [−50, 50], wykrywam zmiany znaku i zawężam je metodą bisekcji.'), tex: `x \\approx ${shown.join(';\\ ')}` }
+    ],
+    note: MD.tr('To wartości przybliżone w przedziale [−50, 50]. Dokładne przekształcenia pokaże „Wyjaśnij z AI”.') + (many ? ' ' + MD.tr('Rozwiązań jest więcej (np. okresowych) — pokazano te najbliższe zera.') : ''),
+    graph: [`y=(${rel.L})-(${rel.R})`], local: true
+  };
+}
 function localSolve(src) {
+  const sysTry = /układ|system|;|\{|\n/i.test(src) || (src.match(/=/g) || []).length >= 2 ? (() => { try { return localSystem(src); } catch (e) { return null; } })() : null;
+  if (sysTry) return sysTry;
   let s = src.trim().replace(/²/g, '^2').replace(/³/g, '^3');
   if (!s || s.includes('\n') || /[;{}]|układ|system|pochodn|deriv|całk|integr|oblicz|calcul|find|pole|area|\bile\b|how many|znajd|rozwi|solve|zadan|problem/i.test(s)) return null;
   const rel = splitRel(s);
@@ -81,7 +142,7 @@ function localSolve(src) {
   const vars = new Set(); for (const side of [rel.L, rel.R]) { const r = MD.parseRow(side, {}); const fv = new Set(); if (r.ast) MD.freeVars(r.ast, fv); if (r.usesX) fv.add('x'); if (r.usesY) fv.add('y'); fv.forEach(n => vars.add(n)); }
   if (vars.size !== 1) return null;
   const v = [...vars][0]; if (v !== 'x') return null;
-  const p = polyFromExpr(`(${rel.L})-(${rel.R})`, v); if (!p) return null;
+  const p = polyFromExpr(`(${rel.L})-(${rel.R})`, v); if (!p) return localNumeric(rel);
   const { a, b, c } = p, eq = rel.op === '=';
   const lhs = polyTex(a, b, c), relTex = { '=': '=', '<': '<', '>': '>', '<=': '\\leq', '>=': '\\geq' }[rel.op];
   const steps = [];
